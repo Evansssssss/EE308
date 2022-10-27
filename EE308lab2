@@ -1,0 +1,148 @@
+#include <fstream>
+#include<bits/stdc++.h>
+using namespace std;
+
+//vector is easy to be made function
+vector <char> vec;
+
+//Build a struct dedicated to logging user input
+struct input{
+	char FileName[500];
+	int level;
+}; 
+
+//if meet "switch" let the vec = 's',if meet 'case' in the next time,let the next vec ='c'.Therefore,we can record the "switch" and "case".
+void identify(int n){
+	if(n==0) {
+		vec.push_back('s');
+	} 
+	else if(n==7) {
+		vec.push_back('c');
+	} 
+}
+
+int main() {
+	int level,WordTop;
+	//Prepare a char array of file names that is long enough
+	int size=500;
+	char FileName[size];
+	int TotalNum=0;
+	int NoPointSwitch=0,INum=0,ENum=0;
+	int SwitchNum=0,IfElseNum=0,IfElseIfNum=0; 
+	//Create an array to accurately record the number of "cases" after each "switch"
+	int CaseNumArr[500];
+	int w;
+	input UserInput;
+	string word;
+	//Create a long string to store all the keywords required by the problem
+	string test="switch case else if auto break char const continue default do double enum extern float for goto int long register return short signed sizeof	static struct typedef union unsigned void volatile while";  
+	//Create a string array to store ifelse related words
+	string IFAndElse[5]={"else if","else ","else{","if(","if "}; 
+	fstream infile,anofile;
+	cout <<"Please enter the path to the file: "; 
+	cin.getline(UserInput.FileName, size);//Obtaining the file path
+	cout << "Please input the level：";
+	cin >> UserInput.level;
+	infile.open(UserInput.FileName);
+	anofile.open(UserInput.FileName); 
+	int i;
+	
+	//LEVEL 1
+	if (!infile.is_open()) {
+		exit(EXIT_FAILURE);
+	}
+	infile >> word;
+	for (;!infile.eof();) 
+	{
+		if (infile.good()) {
+			for(i=2;i<9;i++){
+				WordTop=test.find(word.substr(0, i));
+				if(WordTop<test.size()&&(word[i]==NULL||word[i]=='!'||word[i]=='('||word[i]==')'||word[i]=='{'||word[i]=='}'||word[i]==';'||word[i]==':')){
+					TotalNum++;  
+					identify(WordTop);
+					break;
+				}
+			}
+			infile >> word;
+		}
+	}
+	cout <<"total num: " << TotalNum << endl;
+	
+	for(int j=0;j<vec.size();j++){
+		if(vec[j]=='s'&&vec[j+1]=='c') {
+			CaseNumArr[NoPointSwitch]=0;
+			SwitchNum++;
+		}
+		else if(vec[j]=='c'&&vec[j+1]=='s'){
+			CaseNumArr[NoPointSwitch]++;
+			NoPointSwitch++;
+		}
+		else {
+			CaseNumArr[NoPointSwitch]++;
+		}
+	}
+	//LEVEL 2
+	if(UserInput.level>1){
+		cout<<"switch num: "<<SwitchNum<<endl;
+		cout<<"case num: ";
+		for(int o=0;o<=NoPointSwitch;o++)
+		{
+			cout<<' '<<CaseNumArr[o];
+		}
+		//LEVEL 3
+		if(UserInput.level>2){
+			cout<<endl;		  
+			vec.erase(vec.begin(),vec.end()); 
+			while(getline(anofile,word))
+			{ 
+				for(int q=0;q<5;q++){
+					w=word.find(IFAndElse[q]);
+					if(w!=-1){
+						if(q==0) {//else if
+							vec.push_back('0');
+							break;
+						}
+						else if(q==1||q==2){//else else{
+							vec.push_back('e');
+							break;
+						} 
+						else {
+							vec.push_back('i');
+							break;
+						}
+					}
+				} 
+			}
+			for(int w=0;w<vec.size();w++){
+				if(vec[w]=='i') 
+					INum++;
+				else if(vec[w]=='e'){
+					if(ENum==0&&INum>0) {
+						IfElseNum++;
+						INum--;
+					}
+					else if(ENum>0){
+						ENum--;
+						IfElseIfNum++;
+					}
+				}
+				else if(vec[w]=='0'){
+					if(vec[w-1]!='0'){
+						INum--;
+						if(INum<0)
+						{
+							INum=0;
+						} 
+						ENum++;	
+					}
+				}
+			}
+			cout<<"if-else num: "<<IfElseNum<<endl;
+			//LEVEL 4
+			if(UserInput.level==4){
+				cout<<"if-elseif-else num: "<<IfElseIfNum<<endl;	
+			}
+		}
+	}
+	return 0;
+}
