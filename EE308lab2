@@ -1,17 +1,11 @@
 #include <fstream>
 #include<bits/stdc++.h>
 using namespace std;
-
-//vector is easy to be made function
 vector <char> vec;
-
-//Build a struct dedicated to logging user input
 struct input{
 	char FileName[500];
 	int level;
 }; 
-
-//if meet "switch" let the vec = 's',if meet 'case' in the next time,let the next vec ='c'.Therefore,we can record the "switch" and "case".
 void identify(int n){
 	if(n==0) {
 		vec.push_back('s');
@@ -22,8 +16,7 @@ void identify(int n){
 }
 
 int main() {
-	int level,WordTop;
-	//Prepare a char array of file names that is long enough
+	int level,WordTop;//Prepare a char array of file names that is long enough
 	int size=500;
 	char FileName[size];
 	int TotalNum=0;
@@ -33,10 +26,8 @@ int main() {
 	int CaseNumArr[500];
 	int w;
 	input UserInput;
-	string word;
-	//Create a long string to store all the keywords required by the problem
-	string test="switch case else if auto break char const continue default do double enum extern float for goto int long register return short signed sizeof	static struct typedef union unsigned void volatile while";  
-	//Create a string array to store ifelse related words
+	string word;//Create a long string to store all the keywords required by the problem
+	string test="switch case else if auto break char const continue default do double enum extern float for goto int long register return short signed sizeof	static struct typedef union unsigned void volatile while";  //Create a string array to store ifelse related words
 	string IFAndElse[5]={"else if","else ","else{","if(","if "}; 
 	fstream infile,anofile;
 	cout <<"Please enter the path to the file: "; 
@@ -46,8 +37,7 @@ int main() {
 	infile.open(UserInput.FileName);
 	anofile.open(UserInput.FileName); 
 	int i;
-	
-	//LEVEL 1
+	//1.
 	if (!infile.is_open()) {
 		exit(EXIT_FAILURE);
 	}
@@ -67,7 +57,6 @@ int main() {
 		}
 	}
 	cout <<"total num: " << TotalNum << endl;
-	
 	for(int j=0;j<vec.size();j++){
 		if(vec[j]=='s'&&vec[j+1]=='c') {
 			CaseNumArr[NoPointSwitch]=0;
@@ -81,7 +70,7 @@ int main() {
 			CaseNumArr[NoPointSwitch]++;
 		}
 	}
-	//LEVEL 2
+	//2.
 	if(UserInput.level>1){
 		cout<<"switch num: "<<SwitchNum<<endl;
 		cout<<"case num: ";
@@ -89,7 +78,7 @@ int main() {
 		{
 			cout<<' '<<CaseNumArr[o];
 		}
-		//LEVEL 3
+		//3.
 		if(UserInput.level>2){
 			cout<<endl;		  
 			vec.erase(vec.begin(),vec.end()); 
